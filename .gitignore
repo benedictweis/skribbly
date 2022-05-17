@@ -105,3 +105,4 @@ dist
 *.lock
 *.css
 *.map
+package-lock.json
