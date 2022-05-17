@@ -1,0 +1,46 @@
+.sideboard {
+    position: fixed;
+    background-color: rgb(65, 215, 65);
+    width: 10%;
+    height: 73%;
+    top: 17%;
+    left: 5%;
+    border-radius: 0.4rem;
+}
+
+.canvas {
+    display: inline;
+    left: 16%;
+    top: 17%;
+    border: 2px solid #b1df29;
+    border-radius: 0.4rem;
+}
+
+.chat {
+    position: fixed;
+    background-color: blue;
+    width: 20%;
+    height: 73%;
+    top: 17%;
+    right: 5%;
+    border-radius: 0.4rem;
+}
+
+.canvas-container {
+    position: fixed;
+    left: 16%;
+    top: 17%;
+    width: 58%;
+    height: 73%;
+    border-radius: 0.4rem;
+    text-align:center;
+}
+
+.topbar {
+    position: fixed;
+    background-color: #C55BFF;
+    left: 5%;
+    top: 5%;
+    width: 90%;
+    height: 10%;
+}
