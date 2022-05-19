@@ -31,6 +31,7 @@ let drawing = false;
 canvas.addEventListener("mousedown", (e) => {
 
     start_drawing(e.offsetX*relativeSize, e.offsetY*relativeSize);
+    draw_point(e.offsetX*relativeSize, e.offsetY*relativeSize);
 
     socket.emit('draw-input', {
         type: 'start',
