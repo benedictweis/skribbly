@@ -14,15 +14,27 @@ window.addEventListener("resize", () => {
 
 let drawing = false;
 
-canvas.addEventListener("mousedown", () => drawing = true);
+canvas.addEventListener("mousedown", (e) => {
+    drawing = true
+    ctx.beginPath();
+    ctx.arc(e.offsetX*relativeSize,e.offsetY*relativeSize,brushSize,0,2*Math.PI);
+    ctx.fill();
+});
 canvas.addEventListener("mousemove", draw);
-canvas.addEventListener("mouseup", () => drawing = false);
-canvas.addEventListener("mouseout", () => drawing = false);
+canvas.addEventListener("mouseup", () => {
+    drawing = false;
+    previousPosition = -1;
+});
+canvas.addEventListener("mouseout", () => {
+    drawing = false;
+    previousPosition = -1;
+});
 
 let ctx = canvas.getContext("2d");
 
 // size of circles drawn
 let brushSize = 10;
+ctx.lineWidth = 2*brushSize;
 
 ctx.imageSmootingEnabled = false;
 
@@ -42,13 +54,26 @@ function resize_canvas() {
 
 function recalculateRelativeSize(){
     relativeSize = canvas.width/canvas.clientWidth;
-    console.log(relativeSize);
 }
+
+let previousPosition;
 
 function draw(e){
     if (drawing){
+        if (previousPosition){
+            ctx.beginPath();
+            ctx.moveTo(previousPosition.x,previousPosition.y);
+            ctx.lineTo(e.offsetX*relativeSize,e.offsetY*relativeSize);
+            ctx.stroke();
+        }
+
         ctx.beginPath();
         ctx.arc(e.offsetX*relativeSize,e.offsetY*relativeSize,brushSize,0,2*Math.PI);
         ctx.fill();
+        
+        previousPosition ={
+            x: e.offsetX*relativeSize,
+            y: e.offsetY*relativeSize
+        }
     }
 }
