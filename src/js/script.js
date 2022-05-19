@@ -1,77 +1,97 @@
 let canvas = document.querySelector(".canvas");
 let canvas_container = document.querySelector(".canvas-container");
 
+const socket = io();
+
 // size of canvas relative to actual size on screen
 let relativeSize;
+let ctx = canvas.getContext("2d");
 
 canvas.height = 800;
 canvas.width = 1200;
 
-resize_canvas();
+resize_canvas_element();
 window.addEventListener("resize", () => {
-    resize_canvas();
+    resize_canvas_element();
 })
+
+function resize_canvas_element() {
+
+    let condition = canvas_container.clientWidth / canvas_container.clientHeight < 3/2;
+
+    canvas.style.width = condition ? "100%" : "";
+    canvas.style.height = condition ? "" : "100%";
+
+    relativeSize = canvas.width/canvas.clientWidth;
+}
+
 
 let drawing = false;
 
 canvas.addEventListener("mousedown", (e) => {
-    drawing = true
+
+    start_drawing(e.offsetX*relativeSize, e.offsetY*relativeSize);
+
+    socket.emit('draw-input', {
+        type: 'start',
+        x: Math.round(e.offsetX*relativeSize),
+        y: Math.round(e.offsetY*relativeSize)
+    });
+    drawing = true;
+});
+canvas.addEventListener("mousemove", (e) => {
+    if (!drawing) return;
+
+    draw_point(e.offsetX*relativeSize, e.offsetY*relativeSize);
+
+    socket.emit('draw-input', {
+        type: 'point',
+        x: Math.round(e.offsetX*relativeSize),
+        y: Math.round(e.offsetY*relativeSize)
+    });
+});
+canvas.addEventListener("mouseup", cancelDrawing);
+canvas.addEventListener("mouseout", cancelDrawing);
+
+function cancelDrawing() {
+    if (!drawing) return;
+
+    end_drawing();
+
+    drawing = false;
+    socket.emit('draw-input', {
+        type: 'cancel'
+    });
+}
+
+function start_drawing(x, y) {
     ctx.beginPath();
-    ctx.arc(e.offsetX*relativeSize,e.offsetY*relativeSize,brushSize,0,2*Math.PI);
-    ctx.fill();
-});
-canvas.addEventListener("mousemove", draw);
-canvas.addEventListener("mouseup", () => {
-    drawing = false;
-    previousPosition = -1;
-});
-canvas.addEventListener("mouseout", () => {
-    drawing = false;
-    previousPosition = -1;
-});
-
-let ctx = canvas.getContext("2d");
-
-// size of circles drawn
-let brushSize = 10;
-ctx.lineWidth = 2*brushSize;
-
-ctx.imageSmootingEnabled = false;
-
-function resize_canvas() {
-    if (canvas_container.clientWidth / canvas_container.clientHeight < 3/2) {
-        canvas.style.width = "100%";
-        canvas.style.height = "";
-    }
-    else {
-        canvas.style.height = "100%";
-        canvas.style.width = "";
-    }
-    recalculateRelativeSize();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "bevel";
+    ctx.lineWidth = 20;
+    ctx.moveTo(x, y);
 }
 
-function recalculateRelativeSize(){
-    relativeSize = canvas.width/canvas.clientWidth;
+function draw_point(x, y) {
+    ctx.lineTo(x, y);
+    ctx.stroke();
 }
 
-let previousPosition;
+function end_drawing() {
+    ctx.beginPath();
+}
 
-function draw(e){
-    if (drawing){
-        if (previousPosition){
-            ctx.beginPath();
-            ctx.moveTo(previousPosition.x,previousPosition.y);
-            ctx.lineTo(e.offsetX*relativeSize,e.offsetY*relativeSize);
-            ctx.stroke();
-        }
+socket.on('draw', (msg) => {
 
-        ctx.beginPath();
-        ctx.arc(e.offsetX*relativeSize,e.offsetY*relativeSize,brushSize,0,2*Math.PI);
-        ctx.fill();
-        
-        previousPosition ={
-            x: e.offsetX*relativeSize,
-            y: e.offsetY*relativeSize
-        }
+    console.log(ctx);
+
+    if (msg.type == 'start') {
+        start_drawing(msg.x, msg.y);
     }
-}
+    else if (msg.type == 'cancel') {
+        end_drawing();
+    }
+    else if (msg.type == 'point') {
+        draw_point(msg.x, msg.y);
+    }
+});
