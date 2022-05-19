@@ -38,8 +38,6 @@ ctx.lineWidth = 2*brushSize;
 
 ctx.imageSmootingEnabled = false;
 
-draw(200,200);
-
 function resize_canvas() {
     if (canvas_container.clientWidth / canvas_container.clientHeight < 3/2) {
         canvas.style.width = "100%";
