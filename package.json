@@ -9,6 +9,7 @@
     "start": "nodemon ."
   },
   "dependencies": {
-    "express": "^4.18.1"
+    "express": "^4.18.1",
+    "sass": "^1.51.0"
   }
 }
