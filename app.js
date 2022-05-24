@@ -10,14 +10,29 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + "/src/index.html")
 })
 
+app.get('/game', (req, res) => {
+
+  res.sendFile(__dirname + "/src/game/index.html")
+})
+
 app.get('/js/:script', (req, res) => {
   let script = req.params.script;
   res.sendFile(__dirname + "/src/js/" + script);
 })
 
+app.get('/game/js/:script', (req, res) => {
+  let script = req.params.script;
+  res.sendFile(__dirname + "/src/game/js/" + script);
+})
+
 app.get('/style/:sheet', (req, res) => {
   let sheet = req.params.sheet;
   res.sendFile(__dirname + "/src/style/" + sheet);
+})
+
+app.get('/game/style/:sheet', (req, res) => {
+  let sheet = req.params.sheet;
+  res.sendFile(__dirname + "/src/game/style/" + sheet);
 })
 
 server.listen(port, () => {
