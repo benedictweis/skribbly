@@ -33,4 +33,8 @@ io.on('connection', (socket) => {
 
     socket.broadcast.emit('draw', msg);
   });
+
+  socket.on("new-player", (msg) => {
+    console.log(msg);
+  })
 });

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <script src="./game/js/script.js" defer></script>
+    <link rel="stylesheet" href="./game/style/default.css">
+    <link rel="stylesheet" href="./style/light.css">
+    <link rel="stylesheet" href="./style/dark.css">
+    <title>Skribbly</title>
+</head>
+
+<body>
+    <div class="topbar">
+        SKRIBBLY
+        Round X of Y
+        _ _ _
+    </div>
+    <div class="sideboard">
+        players
+        <button type="submit">Votekick</button>
+        <ul name="players" id="players"></ul>
+    </div>
+    <div class="canvas-container">
+        <canvas class="canvas"></canvas>
+    </div>
+    <div class="chat">
+        chat
+        <input type="text" name="guess" id="guess" placeholder="Type your guess here...">
+    </div>
+</body>
+
+</html>
