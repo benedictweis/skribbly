@@ -1,3 +1,4 @@
+const { log } = require('console');
 const express = require('express')
 const app = express()
 const port = 3000
@@ -39,8 +40,37 @@ server.listen(port, () => {
   console.log(`Skribbly listening on port ${port}`)
 })
 
+io.use((socket, next) => {
+  const sessionID = socket.handshake.auth.sessionID;
+
+  if (sessionID) {
+    // find existing session
+    console.log("HI");
+    const session = sessionStore.findSession(sessionID);
+    if (session) {
+      console.log("HELP");
+      socket.sessionID = sessionID;
+      socket.userID = session.userID;
+      socket.userName = session.userName;
+      console.log(socket.username);
+      return next();
+    }
+  }
+  // create new session
+  socket.sessionID = Math.random().toString(36).slice(2);;
+  socket.userID = Math.random().toString(36).slice(2);;
+  socket.userName = "";
+  next();
+});
+
+
 io.on('connection', (socket) => {
   console.log('a user connected');
+
+  socket.emit("session", {
+    sessionID: socket.sessionID,
+    userID: socket.userID,
+  });
 
   socket.on('draw-input', (msg) => {
     console.log('recieving drawing data');
@@ -50,6 +80,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on("new-player", (msg) => {
-    console.log(msg);
+    if (msg){
+      socket.userName = msg.playerName;
+      console.log(socket.userName);
+    }
   })
 });
+
