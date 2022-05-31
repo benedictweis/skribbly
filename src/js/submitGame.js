@@ -1,8 +1,6 @@
 const prevSessionID = localStorage.getItem("sessionID");
 let socket = io({
-    auth: {
-        sessionID: getSID()
-}
+    auth: {sessionID: getSID()}
 });
 
 function getSID(){
@@ -10,7 +8,7 @@ function getSID(){
             return prevSessionID;
         }
         localStorage.setItem("sessionID",Math.random().toString(36).slice(2))
-        localStorage.getItem("sessionID");
+        return localStorage.getItem("sessionID");
 }
 
 function submit(){

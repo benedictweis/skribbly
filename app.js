@@ -50,6 +50,8 @@ io.use((socket, next) => {
     if (session) {
       console.log("SESSION RESTORED");
       socket.sessionID = sessionID;
+      socket.gameID = session.gameID;
+      socket.playerName = session.playerName;
       return next();
     }
   }
@@ -73,6 +75,8 @@ io.on('connection', (socket) => {
 
   socket.on("new-player", (msg) => {
     if (msg){
+      socket.gameID = msg.gameID;
+      socket.playerName = msg.playerName;
       sessionStore.set(socket.sessionID, {gameID : msg.gameID, playerName: msg.playerName })
       console.log(sessionStore);
     }
