@@ -1,27 +1,24 @@
-let socket = io();
-
-const sessionID = localStorage.getItem("sessionID");
-console.log(sessionID);
-if (sessionID){
-    socket.auth = {sessionID};
-    socket.connect();
+const prevSessionID = localStorage.getItem("sessionID");
+let socket = io({
+    auth: {
+        sessionID: getSID()
 }
-
-socket.on("session", ({ sessionID, userID }) => {
-    // attach the session ID to the next reconnection attempts
-    socket.auth = { sessionID };
-    // store it in the localStorage
-    localStorage.setItem("sessionID", sessionID);
-    // save the ID of the user
-    socket.userID = userID;
 });
+
+function getSID(){
+        if (prevSessionID){
+            return prevSessionID;
+        }
+        localStorage.setItem("sessionID",Math.random().toString(36).slice(2))
+        localStorage.getItem("sessionID");
+}
 
 function submit(){
 
     let gameIdDoc = document.getElementById("gameid");
     let nicknameDoc = document.getElementById("nickname");
     socket.emit("new-player", {
-        gameId: gameIdDoc.value,
+        gameID: gameIdDoc.value,
         playerName: nicknameDoc.value
     });
 }

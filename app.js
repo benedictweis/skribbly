@@ -7,6 +7,8 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
+let sessionStore = new Map;
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + "/src/index.html")
 })
@@ -42,35 +44,25 @@ server.listen(port, () => {
 
 io.use((socket, next) => {
   const sessionID = socket.handshake.auth.sessionID;
-
   if (sessionID) {
     // find existing session
-    console.log("HI");
-    const session = sessionStore.findSession(sessionID);
+    const session = sessionStore.get(sessionID);
     if (session) {
-      console.log("HELP");
+      console.log("SESSION RESTORED");
       socket.sessionID = sessionID;
-      socket.userID = session.userID;
-      socket.userName = session.userName;
-      console.log(socket.username);
       return next();
     }
   }
   // create new session
-  socket.sessionID = Math.random().toString(36).slice(2);;
-  socket.userID = Math.random().toString(36).slice(2);;
-  socket.userName = "";
+  socket.sessionID = socket.handshake.auth.sessionID;
+  sessionStore.set(socket.sessionID, {gameID : socket.userID, playerName: socket.playerName});
+  console.log(sessionStore);
   next();
 });
 
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-
-  socket.emit("session", {
-    sessionID: socket.sessionID,
-    userID: socket.userID,
-  });
 
   socket.on('draw-input', (msg) => {
     console.log('recieving drawing data');
@@ -81,8 +73,8 @@ io.on('connection', (socket) => {
 
   socket.on("new-player", (msg) => {
     if (msg){
-      socket.userName = msg.playerName;
-      console.log(socket.userName);
+      sessionStore.set(socket.sessionID, {gameID : msg.gameID, playerName: msg.playerName })
+      console.log(sessionStore);
     }
   })
 });
