@@ -56,7 +56,7 @@ io.use((socket, next) => {
     }
   }
   // create new session
-  socket.sessionID = socket.handshake.auth.sessionID;
+  socket.sessionID = sessionID;
   sessionStore.set(socket.sessionID, {gameID : socket.userID, playerName: socket.playerName});
   console.log(sessionStore);
   next();
